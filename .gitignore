@@ -1,0 +1,6 @@
+# This is a .gitignore file for a Python project
+# It specifies files and directories that should be ignored by Git.         
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
