@@ -14,6 +14,12 @@ class ContaSalario:
 
   def __str__(self):
     return "[>>Codigo {} Saldo {} <<<]".format(self._codigo, self._saldo)
+
+  def __lt__(self, outro):
+    if self._saldo != outro._saldo:
+      return self._saldo < outro._saldo
+    return self._codigo < outro._codigo
+
   
 
 conta1 = ContaSalario("123-4", 1000)
@@ -36,3 +42,13 @@ print(sorted(idades, reverse=True))
 print(list(reversed(idades)))
 idades.sort()
 print(idades)
+
+
+conta_do_guilherme = ContaSalario(1700)
+conta_do_guilherme.deposita(500)
+
+conta_da_daniela = ContaSalario(3)
+conta_da_daniela.deposita(1000)
+
+conta_do_paulo = ContaSalario(133)
+conta_do_paulo.deposita(500)
