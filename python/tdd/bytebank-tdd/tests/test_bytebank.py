@@ -54,3 +54,20 @@ class TestClass:
             resultado = funcionario_teste.calcular_bonus() # When - Ação
 
             assert resultado  # Then - Desfecho / Resultado esperado
+
+    # def test_retorno_str(self):
+    #     entrada_nome, entrada_data_nascimento, entrada_salario = 'Teste', '13/03/2000', 1000  # Given - Contexto
+    #     esperado = f'Funcionario({entrada_nome}, {entrada_data_nascimento}, {entrada_salario})'
+
+    #     funcionario_teste = Funcionario(entrada_nome, entrada_data_nascimento, entrada_salario)
+    #     resultado = funcionario_teste.__str__()
+
+    #     assert resultado == esperado
+
+    def test_quando_chamar_nome_retorna_nome(self):
+        funcionario = Funcionario("Maria Silva", "13/03/2000", 2000)
+        assert funcionario.nome == "Maria Silva"
+
+    def test_quando_chamar_salario_retorna_salario(self):
+        funcionario = Funcionario("João Souza", "01/01/1990", 3000)
+        assert funcionario.salario == 3000

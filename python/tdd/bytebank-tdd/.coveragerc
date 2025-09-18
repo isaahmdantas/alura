@@ -1,0 +1,12 @@
+[run]
+source = ./codigo
+
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __str__
+    def __repr__
+
+[html]
+directory = coverage_relatorio_html
