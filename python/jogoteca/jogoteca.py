@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, request, redirect, session
+from flask import Flask, flash, render_template, request, redirect, session, url_for
 
 app = Flask(__name__)
 app.secret_key = "alura" 
@@ -24,6 +24,8 @@ def index():
 
 @app.route("/novo")
 def novo_jogo():
+    if "usuario_logado" not in session or session["usuario_logado"] == None:
+        return redirect(url_for("login", proxima=url_for("novo_jogo")))
     return render_template("novo.html", titulo="Novo Jogo")
 
 @app.route("/criar", methods=["POST"])
@@ -36,12 +38,13 @@ def criar_jogo():
     print(f"Jogo criado: {novo_jogo.nome}, Categoria: {novo_jogo.categoria}, Console: {novo_jogo.console}")
     jogos.append(novo_jogo)
 
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
 @app.route("/login")
 def login():
-    return render_template("login.html", titulo="Login")
+    proxima  = request.args.get("proxima")
+    return render_template("login.html", titulo="Login", proxima=proxima)
 
 @app.route("/autenticar", methods=["POST"])
 def autenticar():
@@ -51,16 +54,19 @@ def autenticar():
     if senha == "alohomora":
         session["usuario_logado"] = usuario
         flash(session["usuario_logado"] + " logado com sucesso!")
-        return redirect("/")
+        proxima_pagina = request.form["proxima"]
+        if proxima_pagina:
+            return redirect(proxima_pagina)
+        return redirect(url_for("index"))
     else:
         flash("Usuário não logado!")
-        return render_template("login.html", titulo="Login", erro="Usuário ou senha inválidos.")
+        redirect(url_for("login"))
     
 @app.route("/logout")
 def logout():
     usuario = session["usuario_logado"]
     session.pop("usuario_logado", None)
     flash(usuario + " deslogado com sucesso!")
-    return redirect("/")
+    return redirect(url_for("index"))
 
 app.run(debug=True)
