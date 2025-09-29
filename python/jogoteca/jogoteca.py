@@ -9,6 +9,12 @@ class Jogo:
         self.categoria = categoria
         self.console = console
 
+class Usuario:
+    def __init__(self, nome, nickname, senha):
+        self.nome = nome
+        self.nickname = nickname
+        self.senha = senha
+
 jogos = [
     Jogo("Tetris", "Puzzle", "Game Boy"),
     Jogo("Super Mario", "Plataforma", "Super Nintendo"),
@@ -16,6 +22,12 @@ jogos = [
     Jogo("Minecraft", "Sandbox", "Multiplataforma"),
     Jogo("Final Fantasy", "RPG", "PlayStation")
 ]
+
+usuario1 = Usuario("Isadora", "isa", "alohomora")
+usuario2 = Usuario("Maria", "ma", "teste123")
+usuario3 = Usuario("João", "jo", "python_eh_vida")
+
+usuarios = {usuario1.nickname: usuario1, usuario2.nickname: usuario2, usuario3.nickname: usuario3}
 
 @app.route("/")
 def index():  
@@ -49,18 +61,31 @@ def login():
 @app.route("/autenticar", methods=["POST"])
 def autenticar():
     usuario = request.form["usuario"]
-    senha = request.form["senha"]
+    senha = request.form["senha"] 
 
-    if senha == "alohomora":
-        session["usuario_logado"] = usuario
-        flash(session["usuario_logado"] + " logado com sucesso!")
-        proxima_pagina = request.form["proxima"]
-        if proxima_pagina:
-            return redirect(proxima_pagina)
-        return redirect(url_for("index"))
+    if usuario in usuarios:
+        current_user = usuarios[usuario]
+        if senha == current_user.senha:
+            session["usuario_logado"] = current_user.nickname
+            flash(current_user.nome + " logado com sucesso!")
+            proxima_pagina = request.form["proxima"]
+            if proxima_pagina:
+                return redirect(proxima_pagina)
+            return redirect(url_for("index"))
     else:
-        flash("Usuário não logado!")
-        redirect(url_for("login"))
+        flash("Usuário ou senha inválidos!")
+        return redirect(url_for("login"))
+
+    # if senha == "alohomora":
+    #     session["usuario_logado"] = usuario
+    #     flash(session["usuario_logado"] + " logado com sucesso!")
+    #     proxima_pagina = request.form["proxima"]
+    #     if proxima_pagina:
+    #         return redirect(proxima_pagina)
+    #     return redirect(url_for("index"))
+    # else:
+    #     flash("Usuário não logado!")
+    #     redirect(url_for("login"))
     
 @app.route("/logout")
 def logout():
