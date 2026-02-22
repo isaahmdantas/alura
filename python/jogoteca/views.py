@@ -14,6 +14,27 @@ def novo_jogo():
         return redirect(url_for("login", proxima=url_for("novo_jogo")))
     return render_template("novo.html", titulo="Novo Jogo")
 
+@app.route("/editar/<int:id>")
+def editar_jogo(id):
+    if "usuario_logado" not in session or session["usuario_logado"] == None:
+        return redirect(url_for("login", proxima=url_for("editar_jogo", id=id)))
+    jogo = Jogos.query.filter_by(id=id).first()
+    return render_template("editar.html", titulo="Editando Jogo", jogo=jogo)
+
+@app.route("/atualizar", methods=["POST"])
+def atualizar_jogo():
+    jogo = Jogos.query.filter_by(id=request.form["id"]).first()
+
+    jogo.nome = request.form["nome"]
+    jogo.categoria = request.form["categoria"]
+    jogo.console = request.form["console"]
+
+    db.session.add(jogo)
+    db.session.commit()
+
+    flash("Jogo atualizado com sucesso!")
+    return redirect(url_for("index"))
+
 @app.route("/criar", methods=["POST"])
 def criar_jogo():
     nome = request.form["nome"]
@@ -39,7 +60,7 @@ def login():
 
 @app.route("/autenticar", methods=["POST"])
 def autenticar():
-    usuario = Usuarios.query.filter_by(nickname=request.form["nickname"]).first()
+    usuario = Usuarios.query.filter_by(nickname=request.form["usuario"]).first()
     if usuario:
         if request.form["senha"] == usuario.senha:
             session["usuario_logado"] = usuario.nickname
