@@ -1,97 +1,16 @@
-from flask import Flask, flash, render_template, request, redirect, session, url_for
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = "alura" 
 
-class Jogo:
-    def __init__(self, nome, categoria, console):
-        self.nome = nome
-        self.categoria = categoria
-        self.console = console
-
-class Usuario:
-    def __init__(self, nome, nickname, senha):
-        self.nome = nome
-        self.nickname = nickname
-        self.senha = senha
-
-jogos = [
-    Jogo("Tetris", "Puzzle", "Game Boy"),
-    Jogo("Super Mario", "Plataforma", "Super Nintendo"),
-    Jogo("Paciência", "Cartas", "Windows"),
-    Jogo("Minecraft", "Sandbox", "Multiplataforma"),
-    Jogo("Final Fantasy", "RPG", "PlayStation")
-]
-
-usuario1 = Usuario("Isadora", "isa", "alohomora")
-usuario2 = Usuario("Maria", "ma", "teste123")
-usuario3 = Usuario("João", "jo", "python_eh_vida")
-
-usuarios = {usuario1.nickname: usuario1, usuario2.nickname: usuario2, usuario3.nickname: usuario3}
-
-@app.route("/")
-def index():  
-    return render_template("lista.html", titulo="Jogos", jogos=jogos)
-
-
-@app.route("/novo")
-def novo_jogo():
-    if "usuario_logado" not in session or session["usuario_logado"] == None:
-        return redirect(url_for("login", proxima=url_for("novo_jogo")))
-    return render_template("novo.html", titulo="Novo Jogo")
-
-@app.route("/criar", methods=["POST"])
-def criar_jogo():
-    nome = request.form["nome"]
-    categoria = request.form["categoria"]
-    console = request.form["console"]
-    novo_jogo = Jogo(nome, categoria, console)
-
-    print(f"Jogo criado: {novo_jogo.nome}, Categoria: {novo_jogo.categoria}, Console: {novo_jogo.console}")
-    jogos.append(novo_jogo)
-
-    return redirect(url_for("index"))
-
-
-@app.route("/login")
-def login():
-    proxima  = request.args.get("proxima")
-    return render_template("login.html", titulo="Login", proxima=proxima)
-
-@app.route("/autenticar", methods=["POST"])
-def autenticar():
-    usuario = request.form["usuario"]
-    senha = request.form["senha"] 
-
-    if usuario in usuarios:
-        current_user = usuarios[usuario]
-        if senha == current_user.senha:
-            session["usuario_logado"] = current_user.nickname
-            flash(current_user.nome + " logado com sucesso!")
-            proxima_pagina = request.form["proxima"]
-            if proxima_pagina:
-                return redirect(proxima_pagina)
-            return redirect(url_for("index"))
-    else:
-        flash("Usuário ou senha inválidos!")
-        return redirect(url_for("login"))
-
-    # if senha == "alohomora":
-    #     session["usuario_logado"] = usuario
-    #     flash(session["usuario_logado"] + " logado com sucesso!")
-    #     proxima_pagina = request.form["proxima"]
-    #     if proxima_pagina:
-    #         return redirect(proxima_pagina)
-    #     return redirect(url_for("index"))
-    # else:
-    #     flash("Usuário não logado!")
-    #     redirect(url_for("login"))
-    
-@app.route("/logout")
-def logout():
-    usuario = session["usuario_logado"]
-    session.pop("usuario_logado", None)
-    flash(usuario + " deslogado com sucesso!")
-    return redirect(url_for("index"))
+app.config['SQLALCHEMY_DATABASE_URI'] = '{SGBD}://{usuario}:{senha}@{servidor}/{database}'.format(
+    SGBD = 'mysql+mysqlconnector',
+    usuario = 'root',
+    senha = '12345678',
+    servidor = 'localhost', 
+    database = 'jogoteca'
+)
+db = SQLAlchemy(app) 
 
 app.run(debug=True)
