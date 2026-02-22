@@ -1,6 +1,6 @@
 from flask import flash, render_template, request, redirect, session, url_for
 from jogoteca import app, db
-from jogoteca.models import Jogos, Usuarios
+from models import Jogos, Usuarios
 
 @app.route("/")
 def index():  
